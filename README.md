@@ -1,2 +1,2 @@
-# smart-baking-recipe-app-prototype
-smart-baking-recipe-app-prototype
+# Smart Baking Recipe App Prototype
+Smart baking recipe app prototype
