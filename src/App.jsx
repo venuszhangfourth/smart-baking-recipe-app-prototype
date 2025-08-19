@@ -1,90 +1,70 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 
-const INITIAL_RECIPES = [
-  { id: '1', title: 'Classic Chocolate Cake', dietary: ['vegetarian'], ingredients: ['flour', 'sugar', 'cocoa'], servings: 8, images: [] },
-  { id: '2', title: 'Gluten-Free Bread', dietary: ['gluten-free'], ingredients: ['gluten-free flour', 'yeast', 'water'], servings: 4, images: [] },
-  { id: '3', title: 'Diabetic-Friendly Lemon Tart', dietary: ['diabetic'], ingredients: ['almond flour', 'erythritol', 'lemon'], servings: 6, images: [] }
+const MOCKED_RECIPES = [
+  { id: '1', title: 'Classic Chocolate Cake', dietary: ['vegetarian'], ingredients: ['flour', 'sugar', 'cocoa'], servings: 8 },
+  { id: '2', title: 'Gluten-Free Bread', dietary: ['gluten-free'], ingredients: ['gluten-free flour', 'yeast', 'water'], servings: 4 },
+  { id: '3', title: 'Diabetic-Friendly Lemon Tart', dietary: ['diabetic'], ingredients: ['almond flour', 'erythritol', 'lemon'], servings: 6 }
 ];
 
 export default function App() {
-  const [recipes, setRecipes] = useState(INITIAL_RECIPES);
+  const [recipes, setRecipes] = useState(MOCKED_RECIPES);
   const [searchText, setSearchText] = useState('');
   const [filterDietary, setFilterDietary] = useState('all');
-  const [newRecipeTitle, setNewRecipeTitle] = useState('');
+  const [newRecipe, setNewRecipe] = useState({ title:'', dietary:'', ingredients:'', servings:1 });
 
-  const filteredRecipes = recipes.filter(r => {
-    const matchesSearch = r.title.toLowerCase().includes(searchText.toLowerCase());
-    const matchesDietary = filterDietary === 'all' || r.dietary.includes(filterDietary);
-    return matchesSearch && matchesDietary;
-  });
+  const filteredRecipes = recipes.filter(r => 
+    r.title.toLowerCase().includes(searchText.toLowerCase()) &&
+    (filterDietary === 'all' || r.dietary.includes(filterDietary))
+  );
 
-  const deleteRecipe = id => {
-    if (window.confirm('Delete this recipe?')) {
-      setRecipes(prev => prev.filter(r => r.id !== id));
-    }
-  };
+  const deleteRecipe = id => setRecipes(prev => prev.filter(r => r.id !== id));
 
   const addRecipe = () => {
-    if (!newRecipeTitle.trim()) return;
-    const newRecipe = { id: Date.now().toString(), title: newRecipeTitle, dietary: [], ingredients: [], servings: 1, images: [] };
-    setRecipes([newRecipe, ...recipes]);
-    setNewRecipeTitle('');
+    if (!newRecipe.title) return alert('Please enter recipe title');
+    const recipe = {
+      id: Date.now().toString(),
+      title: newRecipe.title,
+      dietary: newRecipe.dietary.split(',').map(s=>s.trim()),
+      ingredients: newRecipe.ingredients.split(',').map(s=>s.trim()),
+      servings: Number(newRecipe.servings)
+    };
+    setRecipes(prev => [recipe, ...prev]);
+    setNewRecipe({ title:'', dietary:'', ingredients:'', servings:1 });
   };
 
-// Placeholder for AI scaling/unit conversion
-const scaleRecipe = (recipe, factor) => {
-  alert(`AI scaling for '${recipe.title}' by factor ${factor} (mocked)`);
-};
-
-// Placeholder for image/video upload
-const uploadImage = recipe => {
-  alert(`Image/video upload for '${recipe.title}' (mocked)`);
-};
+  const scaleRecipe = (recipe, factor) => {
+    alert(\AI scaling for "\" by factor \ (mocked)\);
+  };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Smart Baking — Full Web Prototype</h1>
+    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+      <h1>Smart Baking â€” Web Prototype</h1>
 
-      <input
-        style={{ padding: 8, width: '100%', marginBottom: 12, borderRadius: 4, border: '1px solid #ddd' }}
-        placeholder='Search recipes...'
-        value={searchText}
-        onChange={e => setSearchText(e.target.value)}
-      />
-
-      <div style={{ marginBottom: 12 }}>
-        {['all', 'vegetarian', 'gluten-free', 'diabetic'].map(d => (
-          <button
-            key={d}
-            onClick={() => setFilterDietary(d)}
-            style={{ marginRight: 6, padding: 6, borderRadius: 4, backgroundColor: filterDietary===d?'#ddd':'#eee' }}
-          >
-            {d.charAt(0).toUpperCase() + d.slice(1)}
-          </button>
-        ))}
+      <input placeholder='Search recipes...' value={searchText} onChange={e=>setSearchText(e.target.value)} />
+      
+      <div style={{ margin:'10px 0' }}>
+        <button onClick={()=>setFilterDietary('all')}>All</button>
+        <button onClick={()=>setFilterDietary('vegetarian')}>Vegetarian</button>
+        <button onClick={()=>setFilterDietary('gluten-free')}>Gluten-Free</button>
+        <button onClick={()=>setFilterDietary('diabetic')}>Diabetic</button>
       </div>
 
-      <div style={{ marginBottom: 12 }}>
-        <input
-          style={{ padding: 6, width: '70%', marginRight: 6, borderRadius: 4, border: '1px solid #ddd' }}
-          placeholder='New recipe title'
-          value={newRecipeTitle}
-          onChange={e => setNewRecipeTitle(e.target.value)}
-        />
-        <button style={{ padding: 6, borderRadius: 4 }} onClick={addRecipe}>Add Recipe</button>
-      </div>
+      <h2>Add Recipe</h2>
+      <input placeholder='Title' value={newRecipe.title} onChange={e=>setNewRecipe({...newRecipe,title:e.target.value})} />
+      <input placeholder='Dietary (comma)' value={newRecipe.dietary} onChange={e=>setNewRecipe({...newRecipe,dietary:e.target.value})} />
+      <input placeholder='Ingredients (comma)' value={newRecipe.ingredients} onChange={e=>setNewRecipe({...newRecipe,ingredients:e.target.value})} />
+      <input type='number' placeholder='Servings' value={newRecipe.servings} onChange={e=>setNewRecipe({...newRecipe,servings:e.target.value})} />
+      <button onClick={addRecipe}>Add Recipe</button>
 
-      {filteredRecipes.map(r => (
-        <div key={r.id} style={{ border: '1px solid #eee', padding: 12, borderRadius: 6, marginBottom: 10, backgroundColor: '#fff' }}>
+      <h2>Recipes</h2>
+      {filteredRecipes.map(r=>(
+        <div key={r.id} style={{ border:'1px solid #ddd', margin:'10px 0', padding:'10px' }}>
           <h3>{r.title}</h3>
-          <div><b>Dietary:</b> {r.dietary.join(', ')}</div>
-          <div><b>Ingredients:</b> {r.ingredients.join(', ')}</div>
-          <div><b>Servings:</b> {r.servings}</div>
-          <div style={{ marginTop: 6 }}>
-            <button style={{ marginRight: 6 }} onClick={() => scaleRecipe(r, 1.5)}>AI Scale</button>
-            <button style={{ marginRight: 6 }} onClick={() => uploadImage(r)}>Upload Image/Video</button>
-            <button style={{ backgroundColor:'#cc0000', color:'#fff', padding:6, border:'none', borderRadius:4 }} onClick={() => deleteRecipe(r.id)}>Delete</button>
-          </div>
+          <div>Dietary: {r.dietary.join(', ')}</div>
+          <div>Ingredients: {r.ingredients.join(', ')}</div>
+          <div>Servings: {r.servings}</div>
+          <button onClick={()=>deleteRecipe(r.id)}>Delete</button>
+          <button onClick={()=>scaleRecipe(r, 2)}>Scale x2</button>
         </div>
       ))}
     </div>
